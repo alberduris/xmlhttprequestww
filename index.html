@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>XMLHttpRequest w/ Web Workers</title>
+<style>
+#divMov {
+ /* simple box */
+ position:absolute;
+ background:#00ff00;
+ border:1px solid black;
+}
+</style>
+
+</head>
+<body>
+	<h1>XMLHtppRequest - Web Workers</h1>
+	<div id="loading">Realizando peticion XMLHttpRequest via Web Worker...</div>
+	<div id="success" style="display: none">El Web Worker ha realizado la peticion con exito!</div>
+
+	<p>Respuesta:</p>
+	<div id="divMov">SOY LA UI Y NO ME BLOQUEO</div>
+	<div id="worker"></div>
+<script>
+//Mover DIV
+function doMove() {
+  divMov.style.left = parseInt(divMov.style.left)+1+'px';
+  setTimeout(doMove,20); 
+}
+var divMov = document.getElementById('divMov');
+divMov.style.left = '0px';
+doMove();
+
+
+var worker = new Worker('worker.js');
+
+worker.addEventListener('message', function(e) {
+  document.getElementById("loading").style.display = 'none';
+  document.getElementById("success").style.display = 'inline';
+  document.getElementById("worker").textContent = e.data;
+}, false);
+
+worker.postMessage('https://jsonplaceholder.typicode.com/posts');
+</script>
+</body>
+</html>
